@@ -1,0 +1,16 @@
+# Mods Manifest
+
+This folder is for server-side mod jars that should exist locally but should not be committed to git.
+
+## Installed mods
+
+| Mod | Version | Jar file |
+| --- | --- | --- |
+| BlueMap (Fabric) | 5.16 | `bluemap-5.16-fabric.jar` |
+| Fabric API | 0.141.3+1.21.11 | `fabric-api-0.141.3+1.21.11.jar` |
+
+## Notes
+
+- Keep `minecraft/mods/*.jar` out of git
+- Update this file when you add, remove, or upgrade a mod
+- If a mod has extra required dependencies, list them here too
