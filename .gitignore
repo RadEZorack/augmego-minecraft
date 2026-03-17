@@ -1,3 +1,7 @@
 .env
+.gradle/
+.gradle-home/
+.jdk/
+build/
 minecraft/data/
 minecraft/mods/*.jar

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.augmego.minecraft.avatar.AugmegoAvatarMod"
+    ],
+    "client": [
+      "com.augmego.minecraft.avatar.client.AugmegoAvatarClientMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.2",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
