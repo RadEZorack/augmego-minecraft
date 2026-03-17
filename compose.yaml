@@ -1,0 +1,49 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: minecraft
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    environment:
+      EULA: "TRUE"
+      TYPE: "FABRIC"
+      VERSION: "${MC_VERSION}"
+      MEMORY: "${MC_MEMORY}"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "${RCON_PASSWORD}"
+      SERVER_NAME: "${SERVER_NAME}"
+      MOTD: "${MOTD}"
+      ONLINE_MODE: "true"
+      DIFFICULTY: "normal"
+      MODE: "survival"
+      PVP: "true"
+      ENABLE_COMMAND_BLOCK: "false"
+      MAX_PLAYERS: "10"
+      VIEW_DISTANCE: "10"
+      SIMULATION_DISTANCE: "10"
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./minecraft/data:/data
+      - ./minecraft/mods:/mods:ro
+      - ./minecraft/config:/config
+    networks:
+      - mcnet
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: minecraft-nginx
+    restart: unless-stopped
+    depends_on:
+      - minecraft
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - mcnet
+
+networks:
+  mcnet:
+    driver: bridge
