@@ -1,2 +1,3 @@
 .env
 minecraft/data/
+minecraft/mods/*.jar
