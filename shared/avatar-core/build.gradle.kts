@@ -13,4 +13,5 @@ java {
 dependencies {
     implementation("de.javagl:jgltf-model:2.0.4")
     implementation("de.javagl:jgltf-model-builder:2.0.4")
+    implementation("org.joml:joml:1.10.8")
 }

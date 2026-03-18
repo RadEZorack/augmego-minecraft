@@ -8,7 +8,6 @@ public final class AugmegoAvatarClientMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         AugmegoAvatarMod.LOGGER.info("Initializing client avatar renderer");
-        ClientAvatarManager.INSTANCE.preload();
         WorldRenderEvents.AFTER_ENTITIES.register(WorldAvatarRenderHook::render);
     }
 }

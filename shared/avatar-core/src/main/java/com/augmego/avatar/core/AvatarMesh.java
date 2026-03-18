@@ -5,7 +5,12 @@ public record AvatarMesh(
     float[] normals,
     float[] uvs,
     int[] indices,
-    String materialName
+    int nodeIndex,
+    int skinIndex,
+    int[] jointIndices,
+    float[] jointWeights,
+    String materialName,
+    AvatarTexture texture
 ) {
     public int vertexCount() {
         return positions.length / 3;
@@ -17,5 +22,12 @@ public record AvatarMesh(
 
     public boolean hasUvs() {
         return uvs != null && uvs.length >= vertexCount() * 2;
+    }
+
+    public boolean hasSkinning() {
+        return jointIndices != null &&
+            jointWeights != null &&
+            jointIndices.length >= vertexCount() * 4 &&
+            jointWeights.length >= vertexCount() * 4;
     }
 }

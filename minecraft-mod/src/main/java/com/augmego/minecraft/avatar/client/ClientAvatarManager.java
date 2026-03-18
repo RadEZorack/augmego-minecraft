@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
@@ -32,6 +33,19 @@ public final class ClientAvatarManager {
             return null;
         }
         return getTestAvatar();
+    }
+
+    public boolean shouldHideVanillaPlayer(int entityId) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) {
+            return false;
+        }
+
+        if (!(client.world.getEntityById(entityId) instanceof AbstractClientPlayerEntity player)) {
+            return false;
+        }
+
+        return getAvatarForPlayer(player.getUuid()) != null;
     }
 
     private AvatarModel getTestAvatar() {

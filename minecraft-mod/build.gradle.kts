@@ -3,6 +3,8 @@ plugins {
     `maven-publish`
 }
 
+evaluationDependsOn(":shared:avatar-core")
+
 base {
     archivesName.set(property("archives_base_name") as String)
 }
@@ -23,6 +25,18 @@ dependencies {
     mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+    implementation("de.javagl:jgltf-model:2.0.4")
+    implementation("de.javagl:jgltf-impl-v1:2.0.4")
+    implementation("de.javagl:jgltf-impl-v2:2.0.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
+    include("de.javagl:jgltf-model:2.0.4")
+    include("de.javagl:jgltf-impl-v1:2.0.4")
+    include("de.javagl:jgltf-impl-v2:2.0.4")
+    include("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
+    include("com.fasterxml.jackson.core:jackson-core:2.13.1")
+    include("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
 
     implementation(project(":shared:avatar-core"))
 }
@@ -47,4 +61,10 @@ tasks.processResources {
 
 tasks.withType<JavaCompile>().configureEach {
     options.release.set(21)
+}
+
+tasks.jar {
+    val avatarCoreJar = project(":shared:avatar-core").tasks.named("jar")
+    dependsOn(avatarCoreJar)
+    from(avatarCoreJar.map { zipTree(it.outputs.files.singleFile) })
 }
