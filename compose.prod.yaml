@@ -1,0 +1,21 @@
+services:
+  postgres:
+    ports: []
+
+  backend:
+    env_file:
+      - /opt/augmego-minecraft/env/backend.env
+    command: null
+    volumes: []
+    ports:
+      - "3000:3000"
+
+  minecraft:
+    volumes:
+      - /opt/augmego-minecraft/minecraft/data:/data
+      - /opt/augmego-minecraft/minecraft/mods:/mods:ro
+      - /opt/augmego-minecraft/minecraft/config:/config
+
+  nginx:
+    ports:
+      - "80:80"
