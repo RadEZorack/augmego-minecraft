@@ -7,6 +7,7 @@ This folder is for server-side mod jars that should exist locally but should not
 | Mod | Version | Jar file |
 | --- | --- | --- |
 | BlueMap (Fabric) | 5.16 | `bluemap-5.16-fabric.jar` |
+| Fabric API | 0.141.3+1.21.11 | `fabric-api-0.141.3+1.21.11.jar` |
 
 ## Notes
 
