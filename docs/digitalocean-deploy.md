@@ -3,14 +3,16 @@
 This repo is already close to droplet-ready. The production flow in this guide uses GitHub Actions to copy the repo to the server and then runs:
 
 ```sh
-docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+docker compose -f compose.droplet.yaml up -d
 ```
 
 That means:
 
 - GitHub Actions is your deploy trigger
-- The droplet is the machine that builds and runs the containers
+- The droplet runs only the Minecraft server and Nginx
+- The Bun backend can live somewhere else, such as DigitalOcean App Platform
 - Minecraft world data, configs, and mods live outside the checked-out app directory so deploys do not wipe them
+- The droplet uses a dedicated compose file instead of inheriting services from local development
 
 ## 1. Create the droplet
 
@@ -24,7 +26,6 @@ Open these firewall ports on the droplet:
 - `22/tcp` for SSH
 - `80/tcp` for BlueMap through Nginx
 - `25565/tcp` for Minecraft
-- `3000/tcp` only if you want direct access to the backend API
 
 ## 2. Install Docker on the droplet
 
@@ -60,7 +61,7 @@ sudo mkdir -p /opt/augmego-minecraft/minecraft/config
 sudo chown -R $USER:$USER /opt/augmego-minecraft
 ```
 
-## 4. Create the runtime env files on the droplet
+## 4. Create the runtime env file on the droplet
 
 Create `/opt/augmego-minecraft/env/minecraft.env`:
 
@@ -73,17 +74,6 @@ MOTD=Welcome to Augmego Minecraft
 WEB_BASE_URL=https://your-domain.example
 WEB_ORIGINS=https://your-domain.example
 ```
-
-Create `/opt/augmego-minecraft/env/backend.env` with the backend secrets your `core` service needs. At minimum:
-
-```dotenv
-PORT=3000
-DATABASE_URL=postgresql://postgres:postgres@postgres:5432/minecraft?schema=public
-WEB_BASE_URL=https://your-domain.example
-WEB_ORIGINS=https://your-domain.example
-```
-
-If your backend uses additional secrets in [`core/src/index.ts`](/Users/travismiller/Documents/augmego-minecraft/core/src/index.ts), put them in this file too.
 
 ## 5. Put the Fabric mod jars on the droplet
 
@@ -132,9 +122,9 @@ On every push to `main`, or when manually triggered:
 
 1. GitHub Actions checks out the repo.
 2. It copies the repo contents to `/opt/augmego-minecraft/app` on the droplet.
-3. It exports variables from the two droplet env files.
-4. It runs Docker Compose with the base file plus the production override.
-5. Docker rebuilds the backend image and restarts the stack.
+3. It exports variables from `/opt/augmego-minecraft/env/minecraft.env`.
+4. It runs the dedicated droplet compose file.
+5. Docker starts or restarts only the `minecraft` and `nginx` services.
 
 ## 9. First deploy
 
@@ -146,14 +136,14 @@ Once the secrets are set:
 
 ```sh
 cd /opt/augmego-minecraft/app
-docker compose -f compose.yaml -f compose.prod.yaml ps
+docker compose -f compose.droplet.yaml ps
 ```
 
 4. Check Minecraft logs:
 
 ```sh
 cd /opt/augmego-minecraft/app
-docker compose -f compose.yaml -f compose.prod.yaml logs -f minecraft
+docker compose -f compose.droplet.yaml logs -f minecraft
 ```
 
 5. Check BlueMap through Nginx in a browser:
@@ -167,6 +157,4 @@ http://your-domain.example/
 After the basic deploy works, the next upgrades I would make are:
 
 - Add HTTPS with Caddy or Nginx plus Let's Encrypt
-- Move PostgreSQL credentials off the default `postgres/postgres`
-- Build and push the backend image from GitHub Actions instead of building on the droplet
-- Restrict `3000/tcp` in the firewall if the backend does not need public access
+- Point the backend-specific URLs at your DigitalOcean App Platform service

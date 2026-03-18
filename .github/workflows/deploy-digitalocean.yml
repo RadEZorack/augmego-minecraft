@@ -7,8 +7,7 @@ on:
       - main
     paths:
       - ".github/workflows/deploy-digitalocean.yml"
-      - "compose.yaml"
-      - "compose.prod.yaml"
+      - "compose.droplet.yaml"
       - "core/**"
       - "minecraft/**"
       - "nginx/**"
@@ -50,8 +49,7 @@ jobs:
 
             set -a
             . /opt/augmego-minecraft/env/minecraft.env
-            . /opt/augmego-minecraft/env/backend.env
             set +a
 
-            docker compose -f compose.yaml -f compose.prod.yaml up -d --build
-            docker compose -f compose.yaml -f compose.prod.yaml ps
+            docker compose -f compose.droplet.yaml up -d
+            docker compose -f compose.droplet.yaml ps
