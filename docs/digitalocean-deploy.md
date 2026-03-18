@@ -18,7 +18,7 @@ That means:
 
 Use an Ubuntu droplet with enough RAM for the server size you want.
 
-- Small test server: 2 vCPU / 4 GB RAM
+- Small test server: 2 vCPU / 4 GB RAM, with `MC_MEMORY=3G`
 - More comfortable for modded Fabric: 4 vCPU / 8 GB RAM
 
 Open these firewall ports on the droplet:
@@ -67,13 +67,15 @@ Create `/opt/augmego-minecraft/env/minecraft.env`:
 
 ```dotenv
 MC_VERSION=1.21.11
-MC_MEMORY=4G
+MC_MEMORY=3G
 RCON_PASSWORD=replace-this
 SERVER_NAME=Augmego Minecraft
 MOTD=Welcome to Augmego Minecraft
 WEB_BASE_URL=https://your-domain.example
 WEB_ORIGINS=https://your-domain.example
 ```
+
+On a 4 GB droplet, avoid setting `MC_MEMORY=4G`. The host still needs memory for Docker, Linux, and Nginx, and BlueMap can add pressure too. `3G` is a safer default until you move to a larger box.
 
 ## 5. Put the Fabric mod jars on the droplet
 
