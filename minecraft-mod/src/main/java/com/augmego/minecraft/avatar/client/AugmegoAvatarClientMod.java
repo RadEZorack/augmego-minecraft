@@ -11,6 +11,8 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 public final class AugmegoAvatarClientMod implements ClientModInitializer {
+    private static boolean attackPressedLastTick;
+
     private static final KeyBinding OPEN_BROWSER_KEY = new KeyBinding(
         "key.augmegoavatar.open_browser",
         InputUtil.Type.KEYSYM,
@@ -22,17 +24,24 @@ public final class AugmegoAvatarClientMod implements ClientModInitializer {
     public void onInitializeClient() {
         AugmegoAvatarMod.LOGGER.info("Initializing client avatar renderer");
         WorldRenderEvents.AFTER_ENTITIES.register(WorldAvatarRenderHook::render);
+        WorldRenderEvents.AFTER_ENTITIES.register(WorldBrowserPanel::render);
         KeyBindingHelper.registerKeyBinding(OPEN_BROWSER_KEY);
         ClientTickEvents.START_CLIENT_TICK.register(AugmegoAvatarClientMod::onClientTick);
     }
 
     private static void onClientTick(MinecraftClient client) {
-        if (!OPEN_BROWSER_KEY.wasPressed()) {
-            return;
+        if (OPEN_BROWSER_KEY.wasPressed() && client.currentScreen == null) {
+            if (client.player != null && client.world != null) {
+                WorldBrowserPanel.placeInFrontOfPlayer(client);
+            } else {
+                BrowserSessionManager.openFullscreen(client);
+            }
         }
 
-        if (!(client.currentScreen instanceof InGameBrowserScreen)) {
-            client.setScreen(new InGameBrowserScreen());
+        boolean attackPressed = client.options.attackKey.isPressed();
+        if (attackPressed && !attackPressedLastTick && client.currentScreen == null && WorldBrowserPanel.punchOpensFullscreen(client)) {
+            BrowserSessionManager.openFullscreen(client);
         }
+        attackPressedLastTick = attackPressed;
     }
 }

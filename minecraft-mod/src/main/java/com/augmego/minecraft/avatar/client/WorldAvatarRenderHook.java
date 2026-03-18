@@ -20,6 +20,10 @@ public final class WorldAvatarRenderHook {
         Vec3d cameraPos = context.gameRenderer().getCamera().getCameraPos();
 
         for (AbstractClientPlayerEntity player : client.world.getPlayers()) {
+            if (player == client.player && client.options.getPerspective().isFirstPerson()) {
+                continue;
+            }
+
             AvatarModel avatarModel = ClientAvatarManager.INSTANCE.getAvatarForPlayer(player.getUuid());
             if (avatarModel == null) {
                 continue;

@@ -25,8 +25,6 @@ public final class InGameBrowserScreen extends Screen {
     private static final int LOADING_BAR_HEIGHT = 2;
     private static final int LOADING_BAR_TRACK_COLOR = 0x55000000;
     private static final int LOADING_BAR_FILL_COLOR = 0xFF3BA8FF;
-    private static final String DEFAULT_URL = "https://www.google.com";
-
     private MCEFBrowser browser;
     private TextFieldWidget urlField;
     private ButtonWidget backButton;
@@ -49,12 +47,10 @@ public final class InGameBrowserScreen extends Screen {
     }
 
     private void ensureBrowserCreated() {
-        if (browser != null || !MCEF.isInitialized()) {
-            return;
+        browser = BrowserSessionManager.getOrCreateBrowser();
+        if (browser != null) {
+            browser.setFocus(true);
         }
-
-        browser = MCEF.createBrowser(DEFAULT_URL, true);
-        browser.setFocus(true);
     }
 
     private void registerAddressBarDisplayHandler() {
@@ -121,7 +117,11 @@ public final class InGameBrowserScreen extends Screen {
         int urlWidth = Math.max(60, width - FRAME_MARGIN - navX);
         urlField = addDrawableChild(new TextFieldWidget(textRenderer, navX, navY, urlWidth, NAV_BAR_HEIGHT, Text.literal("URL")));
         urlField.setMaxLength(2048);
-        urlField.setText(browser == null || browser.getURL() == null || browser.getURL().isBlank() ? DEFAULT_URL : browser.getURL());
+        urlField.setText(
+            browser == null || browser.getURL() == null || browser.getURL().isBlank()
+                ? BrowserSessionManager.DEFAULT_URL
+                : browser.getURL()
+        );
     }
 
     private int getBrowserX() {
@@ -178,8 +178,7 @@ public final class InGameBrowserScreen extends Screen {
         }
         addressBarDisplayHandler = null;
         if (browser != null) {
-            browser.close();
-            browser = null;
+            browser.setFocus(false);
         }
         super.removed();
     }
