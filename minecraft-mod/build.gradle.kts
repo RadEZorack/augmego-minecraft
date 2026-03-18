@@ -25,6 +25,7 @@ dependencies {
     mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+    modImplementation(include("de.keksuccino:mcef-fabric:2.2.0-1.21.11")!!)
     implementation("de.javagl:jgltf-model:2.0.4")
     implementation("de.javagl:jgltf-impl-v1:2.0.4")
     implementation("de.javagl:jgltf-impl-v2:2.0.4")
