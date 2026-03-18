@@ -1,4 +1,53 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: minecraft-postgres
+    environment:
+      POSTGRES_DB: minecraft
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mcnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d minecraft"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    container_name: minecraft-backend
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./core/.env
+    environment:
+      PORT: "3000"
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/minecraft?schema=public
+      WEB_BASE_URL: ${WEB_BASE_URL:-http://localhost:3001}
+      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:3001}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./core:/app
+      - core_node_modules:/app/node_modules
+    networks:
+      - mcnet
+    command:
+      - /bin/sh
+      - -lc
+      - bun install && bun run db:generate && bun run db:migrate && bun run dev
+    restart: unless-stopped
+
   minecraft:
     image: itzg/minecraft-server:latest
     container_name: minecraft
@@ -47,3 +96,7 @@ services:
 networks:
   mcnet:
     driver: bridge
+
+volumes:
+  postgres_data:
+  core_node_modules:
