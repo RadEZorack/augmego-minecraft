@@ -1,0 +1,4 @@
+map.augmego.ca {
+    encode gzip zstd
+    reverse_proxy minecraft:8100
+}

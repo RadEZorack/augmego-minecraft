@@ -24,7 +24,8 @@ Use an Ubuntu droplet with enough RAM for the server size you want.
 Open these firewall ports on the droplet:
 
 - `22/tcp` for SSH
-- `80/tcp` for BlueMap through Nginx
+- `80/tcp` for HTTP and certificate issuance
+- `443/tcp` for HTTPS
 - `25565/tcp` for Minecraft
 
 ## 2. Install Docker on the droplet
@@ -75,7 +76,7 @@ WEB_BASE_URL=https://your-domain.example
 WEB_ORIGINS=https://your-domain.example
 ```
 
-On a 4 GB droplet, avoid setting `MC_MEMORY=4G`. The host still needs memory for Docker, Linux, and Nginx, and BlueMap can add pressure too. `3G` is a safer default until you move to a larger box.
+On a 4 GB droplet, avoid setting `MC_MEMORY=4G`. The host still needs memory for Docker, Linux, and the web proxy, and BlueMap can add pressure too. `3G` is a safer default until you move to a larger box.
 
 ## 5. Put the Fabric mod jars on the droplet
 
@@ -91,21 +92,15 @@ For this stack that usually includes:
 - BlueMap for Fabric
 - Any other server-side Fabric mods you want enabled
 
-## 6. Update Nginx for your real hostname
+## 6. Set the HTTPS hostname
 
-Edit [`nginx/default.conf`](/Users/travismiller/Documents/augmego-minecraft/nginx/default.conf) and replace:
+Edit [`Caddyfile`](/Users/travismiller/Documents/augmego-minecraft/Caddyfile) if you want to change the hostname:
 
-```nginx
-server_name _;
+```text
+map.augmego.ca
 ```
 
-with your real domain, for example:
-
-```nginx
-server_name map.example.com;
-```
-
-Commit that change before you deploy so the workflow sends the updated config to the droplet.
+Commit that change before you deploy so the workflow sends the updated config to the droplet. Caddy will automatically request and renew the TLS certificate as long as DNS points at the droplet and ports `80` and `443` are reachable.
 
 ## 7. Add GitHub repository secrets
 
@@ -126,7 +121,7 @@ On every push to `main`, or when manually triggered:
 2. It copies the repo contents to `/opt/augmego-minecraft/app` on the droplet.
 3. It exports variables from `/opt/augmego-minecraft/env/minecraft.env`.
 4. It runs the dedicated droplet compose file.
-5. Docker starts or restarts only the `minecraft` and `nginx` services.
+5. Docker starts or restarts only the `minecraft` and `caddy` services.
 
 ## 9. First deploy
 
@@ -148,15 +143,14 @@ cd /opt/augmego-minecraft/app
 docker compose -f compose.droplet.yaml logs -f minecraft
 ```
 
-5. Check BlueMap through Nginx in a browser:
+5. Check BlueMap in a browser:
 
 ```text
-http://your-domain.example/
+https://your-domain.example/
 ```
 
 ## 10. Recommended next improvements
 
 After the basic deploy works, the next upgrades I would make are:
 
-- Add HTTPS with Caddy or Nginx plus Let's Encrypt
 - Point the backend-specific URLs at your DigitalOcean App Platform service

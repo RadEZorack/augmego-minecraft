@@ -31,19 +31,26 @@ services:
     networks:
       - mcnet
 
-  nginx:
-    image: nginx:stable-alpine
-    container_name: minecraft-nginx
+  caddy:
+    image: caddy:2-alpine
+    container_name: minecraft-caddy
     restart: unless-stopped
     depends_on:
       - minecraft
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/default.droplet.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     networks:
       - mcnet
 
 networks:
   mcnet:
     driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

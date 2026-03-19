@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/deploy-digitalocean.yml"
       - "compose.droplet.yaml"
+      - "Caddyfile"
       - "core/**"
       - "minecraft/**"
       - "nginx/**"
@@ -51,5 +52,5 @@ jobs:
             . /opt/augmego-minecraft/env/minecraft.env
             set +a
 
-            docker compose -f compose.droplet.yaml up -d
+            docker compose -f compose.droplet.yaml up -d --remove-orphans
             docker compose -f compose.droplet.yaml ps
