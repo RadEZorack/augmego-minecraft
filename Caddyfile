@@ -3,10 +3,10 @@ map.augmego.ca {
     reverse_proxy minecraft:8100
 }
 
-http://map.augmego.com, https://map.augmego.com {
+http://map.aug-me-go.ca, https://map.aug-me-go.ca, http://map.aug-me-go.com, https://map.aug-me-go.com, http://map.augmego.com, https://map.augmego.com {
     redir https://map.augmego.ca{uri} permanent
 }
 
-http://play.augmego.com, https://play.augmego.com {
+http://play.aug-me-go.ca, https://play.aug-me-go.ca, http://play.aug-me-go.com, https://play.aug-me-go.com, http://play.augmego.com, https://play.augmego.com {
     redir https://play.augmego.ca{uri} permanent
 }
