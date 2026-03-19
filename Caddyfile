@@ -3,6 +3,6 @@ map.augmego.ca {
     reverse_proxy minecraft:8100
 }
 
-map.augmego.com {
+http://map.augmego.com, https://map.augmego.com {
     redir https://map.augmego.ca{uri} permanent
 }
