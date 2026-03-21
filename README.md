@@ -51,6 +51,20 @@ Minimal local-first stack for:
 - Minecraft: `localhost:25565`
 - BlueMap via Nginx: <http://localhost:8080>
 
+## Rebuild The Client Mod Jar
+
+From the repo root, run:
+
+```sh
+JAVA_HOME=$PWD/.jdk/jdk-21.0.10+7/Contents/Home GRADLE_USER_HOME=$PWD/.gradle-home ./gradlew :minecraft-mod:build
+```
+
+The rebuilt client mod jar will be written to:
+
+```sh
+minecraft-mod/build/libs/augmego-avatar-poc-0.0.1.jar
+```
+
 ## Stop and restart
 
 Stop everything:
