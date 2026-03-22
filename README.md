@@ -59,10 +59,12 @@ From the repo root, run:
 JAVA_HOME=$PWD/.jdk/jdk-21.0.10+7/Contents/Home GRADLE_USER_HOME=$PWD/.gradle-home ./gradlew :minecraft-mod:build
 ```
 
+That build also copies `fabric-api-0.141.3+1.21.11.jar` into `minecraft/mods/` automatically.
+
 The rebuilt client mod jar will be written to:
 
 ```sh
-minecraft-mod/build/libs/augmego-avatar-poc-0.0.1.jar
+minecraft-mod/build/libs/augmego-master-0.0.1.jar
 ```
 
 ## Stop and restart

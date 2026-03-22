@@ -12,6 +12,8 @@ base {
 version = property("mod_version") as String
 group = property("maven_group") as String
 
+val fabricApiCoordinates = "net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}"
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -24,7 +26,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
     mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+    modImplementation(fabricApiCoordinates)
     modImplementation(include("de.keksuccino:mcef-fabric:2.2.0-1.21.11")!!)
     implementation("de.javagl:jgltf-model:2.0.4")
     implementation("de.javagl:jgltf-impl-v1:2.0.4")
@@ -40,6 +42,18 @@ dependencies {
     include("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
 
     implementation(project(":shared:avatar-core"))
+}
+
+val installFabricApiToMods by tasks.registering(Copy::class) {
+    description = "Copies the Fabric API jar into minecraft/mods for local/server installs."
+    group = "distribution"
+
+    val fabricApiJar = configurations.detachedConfiguration(dependencies.create(fabricApiCoordinates)).apply {
+        isTransitive = false
+    }
+
+    from(fabricApiJar)
+    into(rootProject.layout.projectDirectory.dir("minecraft/mods"))
 }
 
 tasks.processResources {
@@ -68,4 +82,8 @@ tasks.jar {
     val avatarCoreJar = project(":shared:avatar-core").tasks.named("jar")
     dependsOn(avatarCoreJar)
     from(avatarCoreJar.map { zipTree(it.outputs.files.singleFile) })
+}
+
+tasks.build {
+    dependsOn(installFabricApiToMods)
 }
